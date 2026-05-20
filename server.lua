@@ -1,17 +1,18 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+local QBCore = exports['qb-core']:GetCoreObject({ 'Functions' })
+local sharedItems = exports['qb-core']:GetShared('Items')
 local ActiveMission = 0
 
 RegisterServerEvent('AttackTransport:akceptujto', function()
 	local copsOnDuty = 0
 	local _source = source
-	local xPlayer = QBCore.Functions.GetPlayer(_source)
+	local xPlayer = exports['qb-core']:GetPlayer(_source)
 	local accountMoney = xPlayer.PlayerData.money['bank']
 	if ActiveMission == 0 then
 		if accountMoney < Config.ActivationCost then
 			TriggerClientEvent('QBCore:Notify', _source, 'You need ' .. Config.Currency .. '' .. Config.ActivationCost .. ' in the bank to accept the mission')
 		else
 			for _, v in pairs(QBCore.Functions.GetPlayers()) do
-				local Player = QBCore.Functions.GetPlayer(v)
+				local Player = exports['qb-core']:GetPlayer(v)
 				if Player ~= nil then
 					if (Player.PlayerData.job.name == 'police' or Player.PlayerData.job.type == 'leo') and Player.PlayerData.job.onduty then
 						copsOnDuty = copsOnDuty + 1
@@ -51,20 +52,20 @@ end)
 
 RegisterServerEvent('AttackTransport:graczZrobilnapad', function()
 	local _source = source
-	local xPlayer = QBCore.Functions.GetPlayer(_source)
+	local xPlayer = exports['qb-core']:GetPlayer(_source)
 	local bags = math.random(1, 3)
 	local info = {
 		worth = math.random(Config.Payout.Min, Config.Payout.Max)
 	}
 	exports['qb-inventory']:AddItem(_source, 'markedbills', bags, false, info, 'AttackTransport:graczZrobilnapad')
-	TriggerClientEvent('qb-inventory:client:ItemBox', _source, QBCore.Shared.Items['markedbills'], 'add')
+	TriggerClientEvent('qb-inventory:client:ItemBox', _source, sharedItems['markedbills'], 'add')
 
 	local chance = math.random(1, 100)
 	TriggerClientEvent('QBCore:Notify', _source, 'You took ' .. bags .. ' bags of cash from the van')
 
 	if chance >= 95 then
 		exports['qb-inventory']:AddItem(_source, 'security_card_01', 1, false, false, 'AttackTransport:graczZrobilnapad')
-		TriggerClientEvent('qb-inventory:client:ItemBox', _source, QBCore.Shared.Items['security_card_01'], 'add')
+		TriggerClientEvent('qb-inventory:client:ItemBox', _source, sharedItems['security_card_01'], 'add')
 	end
 	Wait(2500)
 end)
